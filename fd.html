@@ -1,0 +1,302 @@
+
+<html><P ALIGN="CENTER"><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+<script type="text/javascript">
+
+
+
+//calculate the result
+
+function Calc (f) { 
+
+        var term = parseFloat((Number(f.dur_y.value) + Number(f.dur_m.value)/12 + Number(f.dur_d.value)/365)*f.comp.value);
+
+        var term_int = Math.floor(term);
+
+        var term_dec = (term - term_int)/f.comp.value;
+
+        var new_principal = parseFloat(f.principal.value);
+
+        var new_principal_notax = new_principal;
+
+        var interest_this_cycle = 0.0;
+
+        var interest_this_cycle_notax = 0.0;
+
+        var interest_running = 0.0;
+
+        var interest_total = 0.0;
+
+        var interest_tax = 0.0;
+
+        var i=0;
+
+        for (i = 1; i <= term_int; i++) {
+
+             interest_this_cycle = parseFloat(new_principal * f.apr.value/f.comp.value * 0.01);
+
+             interest_this_cycle_notax = parseFloat(new_principal_notax * f.apr.value/f.comp.value * 0.01);
+
+             interest_running = parseFloat(interest_running) + interest_this_cycle;
+
+             interest_total = parseFloat(interest_total) + interest_this_cycle;
+
+             if (((i % (f.comp.value/f.comp_tds.value)) == 0) && (f.comp_tds.value !=0)) {
+
+		interest_tax = interest_running * ((0.01 * f.tds.value *(1 + (f.edu.value * 0.01)))) ;
+
+                interest_running = 0.0;
+
+             }
+
+             else {
+
+                 interest_tax = 0.0;
+
+             }
+
+             new_principal_notax = parseFloat(new_principal_notax) + interest_this_cycle_notax;
+
+             new_principal = parseFloat(new_principal) + interest_this_cycle - interest_tax;
+
+	     
+	 }
+
+	//adding partial value
+
+        interest_total = interest_total + new_principal * (f.apr.value*0.01*term_dec);
+
+        new_principal_notax = new_principal_notax * (1 + f.apr.value*0.01*term_dec);
+
+	new_principal = new_principal * (1 + f.apr.value*0.01*term_dec*(1-(0.01 * f.tds.value *(1 + (f.edu.value * 0.01)))));
+
+
+
+        f.expected_bal.value = new_principal_notax.toFixed(2);
+
+        i = Number(f.expected_bal.value) - Number(f.principal.value);
+
+        f.expected_int.value = i.toFixed(2);
+
+        if(f.comp_tds.value == 0){
+
+          new_principal = f.expected_bal.value - (f.expected_int.value )* 0.01 * f.tds.value *(1 + (f.edu.value * 0.01)) ;
+
+}	   
+
+        f.net_bal.value = new_principal.toFixed(2);
+
+        var taxes = Number(f.expected_bal.value) - Number(f.net_bal.value);
+
+        f.tax.value = taxes.toFixed(2);
+
+
+
+}
+
+
+
+</script>
+
+</head>
+
+
+
+<body>
+
+
+
+
+
+<table> <tbody><tr>
+
+<td valign="top">
+
+<form> 
+
+<table width="350" border="5" bgcolor="SILVER" cellpadding="2">
+
+<tbody><tr><td><b>Fixed Deposit Calculator &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I>
+</b></td></tr>
+
+<tr><td>
+
+<table border="0" cellpadding="2">
+
+<tbody><tr>
+
+<td align="RIGHT">Principal (in Rs.)</td>
+
+<td><input name="principal" size="8" type="text" value="100000"></td>
+
+</tr>
+
+<tr>
+
+<td align="RIGHT">Interest Rate (in %)</td>
+
+<td><input name="apr" size="3" type="text" value="5.7"></td>
+
+</tr>
+
+<tr>
+
+<td align="RIGHT">Compounded Every</td>
+
+<td>
+
+<select name="comp">
+
+<option value="12">Monthly
+
+</option><option selected="" value="4">Quarterly
+
+</option><option value="2">Semi-annually
+
+</option><option value="1">Annually
+
+</option></select>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="RIGHT">Time Period (in yrs)</td>
+
+<td><input name="dur_y" size="3" type="text" value="1"></td>
+
+</tr>
+
+<tr>
+
+<td align="RIGHT">Time Period (in months)</td>
+
+<td><input name="dur_m" size="3" type="text" value="0"></td>
+
+</tr><tr>
+
+<td align="RIGHT">Time Period (in days)</td>
+
+<td><input name="dur_d" size="3" type="text" value="0"></td>
+
+</tr>
+
+<tr>
+
+<td align="RIGHT">TDS Rate (in %)</td>
+
+<td><input name="tds" size="3" type="text" value="10"></td>
+
+</tr>
+
+<tr>
+
+<td align="RIGHT">Education Cess Rate (in %)</td>
+
+<td><input name="edu" size="3" type="text" value="0"></td>
+
+</tr>
+
+<tr>
+
+<td align="RIGHT">TDS Deducted Every</td>
+
+<td>
+
+<select name="comp_tds">
+
+<option value="0"> At end of maturity
+
+</option><option value="4">Quarterly
+
+</option><option value="2">Semi-annually
+
+</option><option selected="" value="1">Annually
+
+</option></select>
+
+</td>
+
+</tr>
+
+</tbody></table>
+
+</td></tr>
+
+<tr><td>
+
+<table border="0" cellpadding="2">
+
+<tbody><tr>
+
+<td><b>Results:</b></td>
+
+</tr>
+
+<tr>
+
+<td align="RIGHT">  Expected Interest (in Rs.)</td>
+
+<td><input name="expected_int" size="10" type="text"></td>
+
+</tr>
+
+<tr>
+
+<td align="RIGHT">  Expected Balance (in Rs.)</td>
+
+<td><input name="expected_bal" size="10" type="text"></td>
+
+</tr>
+
+<tr>
+
+<td align="RIGHT">  Taxes withheld (in Rs.)</td>
+
+<td><input name="tax" size="10" type="text"></td>
+
+</tr>
+
+<tr>
+
+<td align="RIGHT">  Net balance (in Rs.)</td>
+
+<td><input name="net_bal" size="10" type="text"></td>
+
+</tr>
+
+</tbody></table>
+
+</td></tr>
+
+<tr><td align="CENTER"><input onclick="Calc(this.form)" name="calculate" type="button" value="Calculate"></td></tr>
+
+</tbody></table>
+
+</form>
+
+</td>
+
+<td valign="top">
+
+<p>
+
+</p>
+
+<p></p>
+
+</td>
+
+</tr></tbody></table>
+
+<p>
+
+</p>
+
+
+
+
+
+<iframe frameborder="0" scrolling="no" style="background-color: transparent; border: 0px; display: none;" src="./fixed_deposit2_files/saved_resource.html"></iframe><div id="GOOGLE_INPUT_CHEXT_FLAG" input="" input_stat="{&quot;tlang&quot;:true,&quot;tsbc&quot;:true,&quot;pun&quot;:true,&quot;mk&quot;:false,&quot;ss&quot;:true}" style="display: none;"></div></body></html>
